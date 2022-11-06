@@ -30,6 +30,7 @@ export default function Product({ product }: ProductProps) {
   async function handleBuyProduct() {
     try {
       setIsCreatingCheckOutSession(true);
+      
       const response = await axios.post("/api/checkout", {
         priceId: product.defaultPriceId,
       });
@@ -72,7 +73,7 @@ export default function Product({ product }: ProductProps) {
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [{ params: { id: "prod_Mk7zo8XkHSb1CJ" } }],
-    fallback: true,
+    fallback: "blocking",
   };
 };
 
