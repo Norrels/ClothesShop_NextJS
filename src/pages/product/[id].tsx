@@ -1,5 +1,7 @@
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
+import Head from "next/head";
+
 import Image from "next/image";
 import { useState } from "react";
 import Stripe from "stripe";
@@ -22,52 +24,60 @@ interface ProductProps {
 }
 
 export default function Product({ product }: ProductProps) {
-  const [isCreatingCheckOutSession, setIsCreatingCheckOutSession] = useState(false)
+  const [isCreatingCheckOutSession, setIsCreatingCheckOutSession] =
+    useState(false);
 
   async function handleBuyProduct() {
     try {
-      setIsCreatingCheckOutSession(true)
-      const response = await axios.post('/api/checkout', {
+      setIsCreatingCheckOutSession(true);
+      const response = await axios.post("/api/checkout", {
         priceId: product.defaultPriceId,
-      })
+      });
 
-      const {checkoutUrl} = response.data
+      const { checkoutUrl } = response.data;
 
-      window.location.href = checkoutUrl
+      window.location.href = checkoutUrl;
     } catch (err) {
-      alert('Falha ao redirecionar o checkout!')
+      alert("Falha ao redirecionar o checkout!");
     }
   }
 
   return (
-    <ProductContainer>
-      <ImageContainer>
-        <Image src={product.imageUrl} width={480} height={520} alt=""/>
-      </ImageContainer>
-      <ProductDetails>
-        <h1>{product.name}</h1>
-        <span>{product.price}</span>
+    <>
+      <Head>
+        <title>{product.name} | Ignite Shop</title>
+      </Head>
 
-        <p>{product.description}</p>
-        <button disabled={isCreatingCheckOutSession} onClick={handleBuyProduct}>Compra agora</button>
-      </ProductDetails>
-    </ProductContainer>
+      <ProductContainer>
+        <ImageContainer>
+          <Image src={product.imageUrl} width={480} height={520} alt="" />
+        </ImageContainer>
+        <ProductDetails>
+          <h1>{product.name}</h1>
+          <span>{product.price}</span>
+
+          <p>{product.description}</p>
+          <button
+            disabled={isCreatingCheckOutSession}
+            onClick={handleBuyProduct}
+          >
+            Compra agora
+          </button>
+        </ProductDetails>
+      </ProductContainer>
+    </>
   );
 }
 
-
 export const getStaticPaths: GetStaticPaths = async () => {
-    return {
-        paths: [
-            { params: { id: 'prod_Mk7zo8XkHSb1CJ'}}
-        ],
-        fallback: true
-    }
-}
-
+  return {
+    paths: [{ params: { id: "prod_Mk7zo8XkHSb1CJ" } }],
+    fallback: true,
+  };
+};
 
 export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
-  params
+  params,
 }) => {
   const productId = params.id;
 
@@ -88,7 +98,7 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
           currency: "BRL",
         }).format(price.unit_amount / 100),
         description: product.description,
-        defaultPriceId: price.id
+        defaultPriceId: price.id,
       },
     },
     revalidate: 60 * 60 * 1, //1 hour
