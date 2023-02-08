@@ -68,7 +68,6 @@ export const ProductDetails = styled('div', {
         },
 
         '&:not(:disabled):hover': {
-            
             backgroundColor: '$green300'
         }
 

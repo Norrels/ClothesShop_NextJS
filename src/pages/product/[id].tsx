@@ -5,6 +5,8 @@ import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
 import Stripe from "stripe";
+import { ProductsProps } from "../../contexts/CartContext";
+import { useCart } from "../../hooks/useCart";
 import { stripe } from "../../lib/stripe";
 import {
   ImageContainer,
@@ -12,35 +14,33 @@ import {
   ProductDetails,
 } from "../../styles/pages/product";
 
-interface ProductProps {
-  product: {
-    id: string;
-    name: string;
-    imageUrl: string;
-    price: number;
-    description: string;
-    defaultPriceId: string;
-  };
+interface ProductPropsUnit {
+  product: ProductsProps;
 }
 
-export default function Product({ product }: ProductProps) {
+export default function Product({ product }: ProductPropsUnit) {
   const [isCreatingCheckOutSession, setIsCreatingCheckOutSession] =
     useState(false);
 
-  async function handleBuyProduct() {
-    try {
-      setIsCreatingCheckOutSession(true);
-      
-      const response = await axios.post("/api/checkout", {
-        priceId: product.defaultPriceId,
-      });
+  const { checkeIfProductIsInCart, addToCart } = useCart();
 
-      const { checkoutUrl } = response.data;
+  const isProductInCart = checkeIfProductIsInCart(product.id);
 
-      window.location.href = checkoutUrl;
-    } catch (err) {
-      alert("Falha ao redirecionar o checkout!");
-    }
+  function handleBuyProduct() {
+    addToCart(product);
+    // try {
+    //   setIsCreatingCheckOutSession(true);
+
+    //   const response = await axios.post("/api/checkout", {
+    //     priceId: product.defaultPriceId,
+    //   });
+
+    //   const { checkoutUrl } = response.data;
+
+    //   window.location.href = checkoutUrl;
+    // } catch (err) {
+    //   alert("Falha ao redirecionar o checkout!");
+    // }
   }
 
   return (
@@ -59,10 +59,10 @@ export default function Product({ product }: ProductProps) {
 
           <p>{product.description}</p>
           <button
-            disabled={isCreatingCheckOutSession}
+            disabled={isCreatingCheckOutSession || isProductInCart}
             onClick={handleBuyProduct}
           >
-            Compra agora
+            {isProductInCart ? "Produto já adicionado" : "Compra agora"}
           </button>
         </ProductDetails>
       </ProductContainer>
