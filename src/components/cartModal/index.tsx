@@ -1,5 +1,7 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import axios from "axios";
 import { X } from "phosphor-react";
+import { useState } from "react";
 import { useCart } from "../../hooks/useCart";
 import {
   CartModalCancelButton,
@@ -11,6 +13,25 @@ import { ProductCart } from "../productCard";
 
 export function CartModal() {
   const { products, totalPrice } = useCart();
+
+  const [isCreatingCheckOutSession, setIsCreatingCheckOutSession] =
+    useState(false);
+
+  async function handleBuyProduct() {
+    try {
+      setIsCreatingCheckOutSession(true);
+
+      const response = await axios.post("/api/checkout", {
+        products: products
+      });
+
+      const { checkoutUrl } = response.data;
+
+      window.location.href = checkoutUrl;
+    } catch (err) {
+      alert("Falha ao redirecionar o checkout!");
+    }
+  }
 
   const formatedPrice = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -46,7 +67,12 @@ export function CartModal() {
           <span>Valor Total</span>
           <strong>{formatedPrice}</strong>
         </CartModalResume>
-        <CartModalSubmitButton>Finalizar compra</CartModalSubmitButton>
+        <CartModalSubmitButton
+          onClick={handleBuyProduct}
+          disabled={isCreatingCheckOutSession || products.length < 1}
+        >
+          Finalizar compra
+        </CartModalSubmitButton>
       </CartModalContent>
     </AlertDialog.Portal>
   );

@@ -24,7 +24,7 @@ export const CartModalContent = styled(AlertDialog.Content, {
     height: "75%",
     display: "flex",
     flexDirection: "column",
-    gap: '1.5rem'
+    gap: "1.5rem",
   },
 });
 
@@ -58,5 +58,14 @@ export const CartModalSubmitButton = styled("button", {
   fontWeight: "bold",
   color: "$white",
   fontSize: "$md",
-  marginTop: "3rem",
+  marginTop: "2rem",
+
+  "&:disabled": {
+    opacity: 0.7,
+    cursor: "not-allowed",
+  },
+
+  "&:not(:disabled):hover": {
+    backgroundColor: "$green300",
+  },
 });

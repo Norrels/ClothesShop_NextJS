@@ -19,8 +19,6 @@ interface ProductPropsUnit {
 }
 
 export default function Product({ product }: ProductPropsUnit) {
-  const [isCreatingCheckOutSession, setIsCreatingCheckOutSession] =
-    useState(false);
 
   const { checkeIfProductIsInCart, addToCart } = useCart();
 
@@ -28,19 +26,6 @@ export default function Product({ product }: ProductPropsUnit) {
 
   function handleBuyProduct() {
     addToCart(product);
-    // try {
-    //   setIsCreatingCheckOutSession(true);
-
-    //   const response = await axios.post("/api/checkout", {
-    //     priceId: product.defaultPriceId,
-    //   });
-
-    //   const { checkoutUrl } = response.data;
-
-    //   window.location.href = checkoutUrl;
-    // } catch (err) {
-    //   alert("Falha ao redirecionar o checkout!");
-    // }
   }
 
   return (
@@ -59,7 +44,7 @@ export default function Product({ product }: ProductPropsUnit) {
 
           <p>{product.description}</p>
           <button
-            disabled={isCreatingCheckOutSession || isProductInCart}
+            disabled={isProductInCart}
             onClick={handleBuyProduct}
           >
             {isProductInCart ? "Produto já adicionado" : "Compra agora"}
@@ -99,6 +84,7 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
           currency: "BRL",
         }).format(price.unit_amount / 100),
         description: product.description,
+        numberPrice: price.unit_amount / 100,
         defaultPriceId: price.id,
       },
     },

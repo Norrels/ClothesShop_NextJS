@@ -17,7 +17,7 @@ export function ProductCart({ product }: ProductCartProps) {
   return (
     <CartContainer>
       <picture>
-        <Image width={100} height={100} src={product.imageUrl}></Image>
+        <Image width={100} height={100} src={product.imageUrl} alt=""></Image>
       </picture>
       <CartContent>
         <p>{product.name}</p>
